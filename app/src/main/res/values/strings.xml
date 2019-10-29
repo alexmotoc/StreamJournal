@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">StreamJournal</string>
+
+    <string name="permission_request">This application requires permission for camera and audio recording.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+</resources>
