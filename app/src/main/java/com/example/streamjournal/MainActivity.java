@@ -119,14 +119,14 @@ public class MainActivity extends AppCompatActivity
             if (!rtmpCamera2.isStreaming()) {
                 if (rtmpCamera2.isRecording()
                         || rtmpCamera2.prepareAudio() && rtmpCamera2.prepareVideo()) {
-                    mButtonVideo.setText(R.string.stop);
+                    mButtonVideo.setBackgroundResource(R.drawable.stop_recording_button);
                     rtmpCamera2.startStream(RTMP_SERVER_URL);
                 } else {
                     Toast.makeText(this, "Error preparing stream, This device cant do it",
                             Toast.LENGTH_SHORT).show();
                 }
             } else {
-                mButtonVideo.setText(R.string.record);
+                mButtonVideo.setBackgroundResource(R.drawable.recording_button);
                 rtmpCamera2.stopStream();
             }
         }
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
         if (rtmpCamera2.isStreaming()) {
             rtmpCamera2.stopStream();
-            mButtonVideo.setText(getResources().getString(R.string.record));
+            mButtonVideo.setBackgroundResource(R.drawable.recording_button);
         }
         rtmpCamera2.stopPreview();
 
