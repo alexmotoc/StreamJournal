@@ -9,6 +9,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.pedro.rtplibrary.rtmp.RtmpCamera2;
 import com.pedro.rtplibrary.view.AutoFitTextureView;
@@ -36,9 +37,33 @@ public class MainActivity extends AppCompatActivity
     private AutoFitTextureView mTextureView;
 
     /**
-     * Button to record video
+     * Button to record video.
      */
     private Button mButtonVideo;
+
+    /**
+     *
+     * Button to access settings menu.
+     */
+    private Button mButtonSettings;
+
+    /**
+     *
+     * Button to flip camera.
+     */
+    private Button mButtonFlipCamera;
+
+    /**
+     *
+     * Button to access user profile.
+     */
+    private Button mButtonProfile;
+
+    /**
+     *
+     * Used to display how long the stream has been online for.
+     */
+    private TextView mTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +75,17 @@ public class MainActivity extends AppCompatActivity
 
         mButtonVideo = findViewById(R.id.video);
         mButtonVideo.setOnClickListener(this);
+
+        mButtonSettings = findViewById(R.id.settings);
+        mButtonSettings.setOnClickListener(this);
+
+        mButtonFlipCamera = findViewById(R.id.flipCamera);
+        mButtonFlipCamera.setOnClickListener(this);
+
+        mButtonProfile = findViewById(R.id.profile);
+        mButtonProfile.setOnClickListener(this);
+
+        mTimer = findViewById(R.id.timer);
 
         rtmpCamera2 = new RtmpCamera2(mTextureView, this);
         mTextureView.setSurfaceTextureListener(this);
