@@ -33,9 +33,13 @@
 
         <TextView
             android:id="@+id/timer"
+            android:background="@drawable/rounded_corner_timer"
             android:layout_width="75dp"
             android:layout_height="30dp"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/recordingRed"
+            android:gravity="center"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 
