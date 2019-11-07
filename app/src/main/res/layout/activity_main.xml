@@ -39,7 +39,8 @@
             android:layout_alignParentEnd="true"
             android:textColor="@color/recordingRed"
             android:gravity="center"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="invisible"/>
 
     </RelativeLayout>
 

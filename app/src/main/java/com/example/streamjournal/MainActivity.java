@@ -5,6 +5,9 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Handler;
+import android.os.SystemClock;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
@@ -65,6 +68,10 @@ public class MainActivity extends AppCompatActivity
      */
     private TextView mTimer;
 
+    private Handler timerHandler = new Handler();
+    private long startTime = 0L;
+    long upTime = 0L;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +105,9 @@ public class MainActivity extends AppCompatActivity
             public void run() {
                 Toast.makeText(MainActivity.this, "Connection success", Toast.LENGTH_SHORT)
                         .show();
+                startTime = SystemClock.uptimeMillis();
+                timerHandler.postDelayed(updateTimerThread, 0);
+                mTimer.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -125,6 +135,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, "Disconnected", Toast.LENGTH_SHORT).show();
+                timerHandler.removeCallbacks(updateTimerThread);
+                mTimer.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -192,4 +204,26 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
     }
+
+    private Runnable updateTimerThread = new Runnable() {
+
+        public void run() {
+
+            upTime = SystemClock.uptimeMillis() - startTime;
+
+            int secs = (int) (upTime / 1000);
+            int mins = secs / 60;
+            int hours = mins / 60;
+            secs = secs % 60;
+
+            if (hours == 0) {
+                mTimer.setText(getString(R.string.time_no_hours, mins, secs));
+            } else {
+                mTimer.setText(getString(R.string.time_with_hours, hours, mins, secs));
+            }
+
+            timerHandler.postDelayed(this, 0);
+        }
+
+    };
 }
