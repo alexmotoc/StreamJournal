@@ -174,10 +174,6 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(this, "Error preparing stream, This device cant do it",
                                 Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    mButtonVideo.setBackgroundResource(R.drawable.recording_button);
-                    rtmpCamera2.stopStream();
-                }
                 break;
             case R.id.settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
