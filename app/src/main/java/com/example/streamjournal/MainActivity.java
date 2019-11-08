@@ -1,5 +1,6 @@
 package com.example.streamjournal;
 
+import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Bundle;
@@ -120,7 +121,6 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(MainActivity.this, "Connection failed. " + reason,
                         Toast.LENGTH_SHORT).show();
                 rtmpCamera2.stopStream();
-                mButtonVideo.setText(R.string.record);
             }
         });
     }
@@ -163,20 +163,28 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.video) {
-            if (!rtmpCamera2.isStreaming()) {
-                if (rtmpCamera2.isRecording()
-                        || rtmpCamera2.prepareAudio() && rtmpCamera2.prepareVideo()) {
-                    mButtonVideo.setBackgroundResource(R.drawable.stop_recording_button);
-                    rtmpCamera2.startStream(RTMP_SERVER_URL);
+        switch (view.getId()) {
+            case R.id.video:
+                if (!rtmpCamera2.isStreaming()) {
+                    if (rtmpCamera2.isRecording()
+                            || rtmpCamera2.prepareAudio() && rtmpCamera2.prepareVideo()) {
+                        mButtonVideo.setBackgroundResource(R.drawable.stop_recording_button);
+                        rtmpCamera2.startStream(RTMP_SERVER_URL);
+                    } else {
+                        Toast.makeText(this, "Error preparing stream, This device cant do it",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(this, "Error preparing stream, This device cant do it",
-                            Toast.LENGTH_SHORT).show();
+                    mButtonVideo.setBackgroundResource(R.drawable.recording_button);
+                    rtmpCamera2.stopStream();
                 }
-            } else {
-                mButtonVideo.setBackgroundResource(R.drawable.recording_button);
-                rtmpCamera2.stopStream();
-            }
+                break;
+            case R.id.settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                break;
         }
     }
 
