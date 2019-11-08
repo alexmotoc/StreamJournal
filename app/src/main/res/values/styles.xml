@@ -6,6 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textViewStyle">@style/RalewayTextViewStyle</item>
+
+    </style>
+
+    <style name="RalewayTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/raleway_medium</item>
     </style>
 
 </resources>
