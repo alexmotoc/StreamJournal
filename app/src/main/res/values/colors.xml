@@ -12,4 +12,7 @@
     <color name="white">#FFFFFF</color>
     <color name="timerWhite">#26FFFFFF</color>
     <color name="recordingRed">#C01B1B</color>
+
+    <color name="twitch">#6441a5</color>
+    <color name="youtube">#c4302b</color>
 </resources>

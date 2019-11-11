@@ -16,4 +16,10 @@
     <string name="low_light">Low light denoising</string>
     <string name="advanced">Advanced Enhancements</string>
     <string name="background_blurring">Background blurring</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="connect">Connect your accounts</string>
+    <string name="twitch">TWITCH</string>
+    <string name="youtube">YOUTUBE</string>
 </resources>

@@ -7,10 +7,15 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textViewStyle">@style/RalewayTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RalewayButtonStyle</item>
 
     </style>
 
     <style name="RalewayTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/raleway_medium</item>
+    </style>
+
+    <style name="RalewayButtonStyle" parent="android:Widget.Button">
         <item name="android:fontFamily">@font/raleway_medium</item>
     </style>
 
