@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -20,8 +22,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private static final String TAG = "ProfileActivity";
     private static final int RC_SIGN_IN = 1;
+
     private GoogleSignInClient mGoogleSignInClient;
+
     private Button mTwitch;
+    private Button mYouTube;
 
     @Override
     protected void onStart() {
@@ -32,6 +37,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             // User has not signed in
         } else {
             // User has already signed in
+            updateGoogleSignInUI(account);
         }
     }
 
@@ -45,8 +51,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        mTwitch = findViewById(R.id.youtube_login);
+        mTwitch = findViewById(R.id.twitch_login);
         mTwitch.setOnClickListener(this);
+
+        mYouTube = findViewById(R.id.youtube_login);
+        mYouTube.setOnClickListener(this);
     }
 
     @Override
@@ -61,6 +70,29 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void googleSignIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void updateGoogleSignInUI(GoogleSignInAccount account) {
+        // Hide button used for logging in
+        mYouTube.setVisibility(View.GONE);
+
+        LinearLayout mConnectAccounts = findViewById(R.id.connectAccounts);
+
+        LinearLayout mConnectedAccount = (LinearLayout)getLayoutInflater().inflate(
+                R.layout.logged_in_layout, mConnectAccounts, false);
+
+        TextView mPlatformName = mConnectedAccount.findViewById(R.id.platformName);
+        mPlatformName.setText(R.string.youtube);
+        mPlatformName.setTextColor(getResources().getColor(R.color.youtube));
+
+        Button mLogout = mConnectedAccount.findViewById(R.id.logout);
+        mLogout.setBackground(getResources().getDrawable(R.drawable.youtube_button));
+
+        TextView mAccountInfo = mConnectedAccount.findViewById(R.id.accountInfo);
+        mAccountInfo.setText(getString(R.string.signed_in_google,
+                account.getDisplayName(), account.getEmail()));
+
+        mConnectAccounts.addView(mConnectedAccount);
     }
 
     @Override
@@ -81,7 +113,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            Toast.makeText(ProfileActivity.this, account.getDisplayName(), Toast.LENGTH_SHORT).show();
+            updateGoogleSignInUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
