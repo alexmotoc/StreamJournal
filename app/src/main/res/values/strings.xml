@@ -22,4 +22,6 @@
     <string name="connect">Connect your accounts</string>
     <string name="twitch">TWITCH</string>
     <string name="youtube">YOUTUBE</string>
+    <string name="signed_in_google">You are currently signed in as %1$s (%2$s).</string>
+    <string name="logout">LOG OUT</string>
 </resources>
