@@ -1,5 +1,6 @@
 package com.example.streamjournal;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -16,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
@@ -64,6 +66,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.youtube_login:
                 googleSignIn();
                 break;
+            case R.id.youtube_logout:
+                googleSignOut();
+                break;
         }
     }
 
@@ -72,27 +77,49 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    private void googleSignOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        updateGoogleSignOutUI();
+                    }
+                });
+    }
+
     private void updateGoogleSignInUI(GoogleSignInAccount account) {
         // Hide button used for logging in
         mYouTube.setVisibility(View.GONE);
 
-        LinearLayout mConnectAccounts = findViewById(R.id.connectAccounts);
+        LinearLayout mConnectAccounts = findViewById(R.id.connect_accounts);
 
         LinearLayout mConnectedAccount = (LinearLayout)getLayoutInflater().inflate(
                 R.layout.logged_in_layout, mConnectAccounts, false);
 
-        TextView mPlatformName = mConnectedAccount.findViewById(R.id.platformName);
+        TextView mPlatformName = mConnectedAccount.findViewById(R.id.platform_name);
         mPlatformName.setText(R.string.youtube);
         mPlatformName.setTextColor(getResources().getColor(R.color.youtube));
 
         Button mLogout = mConnectedAccount.findViewById(R.id.logout);
+        mLogout.setId(R.id.youtube_logout);
         mLogout.setBackground(getResources().getDrawable(R.drawable.youtube_button));
+        mLogout.setOnClickListener(this);
 
-        TextView mAccountInfo = mConnectedAccount.findViewById(R.id.accountInfo);
+        TextView mAccountInfo = mConnectedAccount.findViewById(R.id.account_info);
         mAccountInfo.setText(getString(R.string.signed_in_google,
                 account.getDisplayName(), account.getEmail()));
 
-        mConnectAccounts.addView(mConnectedAccount);
+        if (mConnectAccounts.findViewById(R.id.connected_account) == null) {
+            mConnectAccounts.addView(mConnectedAccount);
+        } else {
+            mConnectAccounts.findViewById(R.id.connected_account).setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateGoogleSignOutUI() {
+        mYouTube.setVisibility(View.VISIBLE);
+        LinearLayout mConnectedAccount = findViewById(R.id.connected_account);
+        mConnectedAccount.setVisibility(View.GONE);
     }
 
     @Override
