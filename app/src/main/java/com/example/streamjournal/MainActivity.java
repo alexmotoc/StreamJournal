@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
         mTextureView.setAspectRatio(480, 640);
+        rtmpCamera2.startPreview();
     }
 
     @Override
