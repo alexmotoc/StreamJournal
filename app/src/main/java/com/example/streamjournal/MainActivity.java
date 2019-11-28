@@ -15,6 +15,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.pedro.encoder.input.video.CameraOpenException;
 import com.pedro.rtplibrary.rtmp.RtmpCamera2;
 import com.pedro.rtplibrary.view.AutoFitTextureView;
 import net.ossrs.rtmp.ConnectCheckerRtmp;
@@ -174,6 +176,16 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(this, "Error preparing stream, This device cant do it",
                                 Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    mButtonVideo.setBackgroundResource(R.drawable.recording_button);
+                    rtmpCamera2.stopStream();
+                }
+                break;
+            case R.id.flipCamera:
+                try {
+                    rtmpCamera2.switchCamera();
+                } catch (CameraOpenException e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.settings:
