@@ -52,7 +52,6 @@
             android:text="@string/youtube"
             android:textColor="@color/white"
             android:textStyle="bold"/>
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
