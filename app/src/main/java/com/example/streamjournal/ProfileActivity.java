@@ -9,10 +9,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -27,6 +29,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -62,7 +65,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         tokens = this.getPreferences(Context.MODE_PRIVATE);
         String token = tokens.getString("twitch", "");
 
-        AsyncHttpClient client = new AsyncHttpClient();
+        final AsyncHttpClient client = new AsyncHttpClient();
         client.addHeader("Authorization", "OAuth " + token);
         client.get("https://id.twitch.tv/oauth2/validate", new JsonHttpResponseHandler() {
             @Override
@@ -128,43 +131,55 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 "&scope=%s" +
                 "&state=%s", TWITCH_CLIENT_ID, redirectUrl, responseType, scope, state);
 
-        final AlertDialog.Builder twitchDialog = new AlertDialog.Builder(this);
-        final WebView web = new WebView(this) {
-            @Override
-            public boolean onCheckIsTextEditor() {
-                return true;
-            }
-        };
+        final WebView web = findViewById(R.id.twitch_web);
+        if (web.getVisibility() == View.GONE) {
+            web.setVisibility(View.VISIBLE);
+        } else {
+            web.setVisibility(View.GONE);
+        }
         web.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (!url.startsWith("http://localhost"))  {
                     view.loadUrl(url);
                 } else {
-                    view.loadUrl("https://twitch.tv");
                     // Replace url structure so that parsing can work
                     Uri uri = Uri.parse(url.replace("localhost/#", "twitch.tv?"));
-                    String accessToken = uri.getQueryParameter("access_token");
+                    final String accessToken = uri.getQueryParameter("access_token");
                     SharedPreferences.Editor editor = tokens.edit();
                     editor.putString("twitch", accessToken);
-                    editor.commit();
+                    editor.apply();
+                    web.setVisibility(View.GONE);
+                    updateTwitchSignInUI();
+
+                    // Send token to get saved to the REST API
+                    final AsyncHttpClient client = new AsyncHttpClient();
+                    client.get("https://tungsten.alexlogan.co.uk/user/b0960c68-af68-4e5b-8447-1150878998c1/", new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            try {
+                                JSONObject tokens = new JSONObject(response.getString("tokens"));
+                                JSONObject twitch = tokens.getJSONObject("twitch");
+                                twitch.put("authentication", accessToken);
+
+                                RequestParams params = new RequestParams();
+                                params.put("tokens", tokens.toString());
+                                client.put("https://tungsten.alexlogan.co.uk/user/b0960c68-af68-4e5b-8447-1150878998c1/", params, new JsonHttpResponseHandler());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 }
                 return true;
             }
         });
+        String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36";
+        web.getSettings().setUserAgentString(USER_AGENT);
         web.getSettings().setJavaScriptEnabled(true);
         CookieManager.getInstance().removeAllCookies(null);
         web.loadUrl(authenticationUrl);
-        twitchDialog.setView(web);
-        twitchDialog.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-                updateTwitchSignInUI();
-            }
-        });
-        twitchDialog.show();
-        web.requestFocus(View.FOCUS_DOWN);
     }
 
     private void twitchSignOut() {
