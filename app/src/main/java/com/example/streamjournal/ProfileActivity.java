@@ -121,7 +121,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void twitchSignIn() {
         String redirectUrl = "http://localhost";
         String responseType = "token";
-        String scope = "user:edit";
+        String scope = "user:edit+channel_read";
         String state = "c3ab8aa609ea11e793ae92361f002671";
 
         String authenticationUrl = String.format("https://id.twitch.tv/oauth2/authorize" +
@@ -158,13 +158,29 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             try {
-                                JSONObject tokens = new JSONObject(response.getString("tokens"));
-                                JSONObject twitch = tokens.getJSONObject("twitch");
-                                twitch.put("authentication", accessToken);
+                                final JSONObject tokens = new JSONObject(response.getString("tokens"));
+                                final JSONObject twitch = tokens.getJSONObject("twitch");
 
-                                RequestParams params = new RequestParams();
-                                params.put("tokens", tokens.toString());
-                                client.put("https://tungsten.alexlogan.co.uk/user/b0960c68-af68-4e5b-8447-1150878998c1/", params, new JsonHttpResponseHandler());
+                                client.addHeader("Authorization", "OAuth " + accessToken);
+                                client.addHeader("Client-ID", TWITCH_CLIENT_ID);
+                                client.addHeader("Accept", "application/vnd.twitchtv.v5+json");
+                                client.get("https://api.twitch.tv/kraken/channel", new JsonHttpResponseHandler() {
+                                    @Override
+                                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                        try {
+                                            String streamKey = response.getString("stream_key");
+                                            twitch.put("streamKey", streamKey);
+                                            twitch.put("authentication", accessToken);
+
+                                            RequestParams params = new RequestParams();
+                                            params.put("tokens", tokens.toString());
+                                            client.removeAllHeaders();
+                                            client.put("https://tungsten.alexlogan.co.uk/user/b0960c68-af68-4e5b-8447-1150878998c1/", params, new JsonHttpResponseHandler());
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
