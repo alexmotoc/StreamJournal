@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,10 +18,19 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.pedro.encoder.input.video.CameraOpenException;
 import com.pedro.rtplibrary.rtmp.RtmpCamera2;
 import com.pedro.rtplibrary.view.AutoFitTextureView;
 import net.ossrs.rtmp.ConnectCheckerRtmp;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * More documentation see:
@@ -28,7 +39,8 @@ import net.ossrs.rtmp.ConnectCheckerRtmp;
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends AppCompatActivity
-        implements ConnectCheckerRtmp, View.OnClickListener, TextureView.SurfaceTextureListener {
+        implements ConnectCheckerRtmp, View.OnClickListener,
+        TextureView.SurfaceTextureListener, TextureView.OnTouchListener {
 
     private static final String RTMP_SERVER_URL = "rtmp://tungsten.alexlogan.co.uk:8569/ingest/cs407";
 
@@ -99,6 +111,7 @@ public class MainActivity extends AppCompatActivity
 
         rtmpCamera2 = new RtmpCamera2(mTextureView, this);
         mTextureView.setSurfaceTextureListener(this);
+        mTextureView.setOnTouchListener(this);
     }
 
     @Override
@@ -202,8 +215,35 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onTouch(final View v, final MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN){
+            // Send normalised coordinates of the tap to the REST Api
+            final AsyncHttpClient client = new AsyncHttpClient();
+            client.get("https://tungsten.alexlogan.co.uk/effect/b5583fa0-60ac-4ce1-8ba5-352d80757933/", new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        JSONObject effects = new JSONObject(response.getString("effects"));
+                        JSONObject targetArea = new JSONObject();
+                        targetArea.put("x", event.getX() / v.getWidth());
+                        targetArea.put("y", event.getY() / v.getHeight());
+                        effects.put("target", targetArea);
+
+                        RequestParams params = new RequestParams();
+                        params.put("effects", effects.toString());
+                        client.put("https://tungsten.alexlogan.co.uk/effect/b5583fa0-60ac-4ce1-8ba5-352d80757933/", params, new JsonHttpResponseHandler());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        return true;
+    }
+
+    @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
-        mTextureView.setAspectRatio(480, 640);
+        mTextureView.setAspectRatio(1080, 1920);
         rtmpCamera2.startPreview();
     }
 
