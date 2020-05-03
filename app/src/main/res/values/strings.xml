@@ -11,11 +11,8 @@
     <!-- Settings -->
     <string name="settings">Settings</string>
     <string name="basic">Basic Enhancements</string>
-    <string name="contrast_adjustment">Contrast adjustment</string>
-    <string name="image_stabilisation">Image stabilisation</string>
-    <string name="low_light">Low light denoising</string>
     <string name="advanced">Advanced Enhancements</string>
-    <string name="background_blurring">Background blurring</string>
+    <string name="templates">Templates</string>
 
     <!-- Profile -->
     <string name="profile">Profile</string>
