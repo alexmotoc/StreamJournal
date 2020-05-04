@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity
             public void run() {
                 Toast.makeText(MainActivity.this, "Connection success", Toast.LENGTH_SHORT)
                         .show();
+                // Start timer when the connection to the server is successful
                 startTime = SystemClock.uptimeMillis();
                 timerHandler.postDelayed(updateTimerThread, 0);
                 mTimer.setVisibility(View.VISIBLE);

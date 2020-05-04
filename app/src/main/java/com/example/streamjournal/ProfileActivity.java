@@ -185,6 +185,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 return true;
             }
         });
+
+        // Set desktop user agent so that there is no mobile redirect
         String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) " +
                 "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36";
         web.getSettings().setUserAgentString(USER_AGENT);
