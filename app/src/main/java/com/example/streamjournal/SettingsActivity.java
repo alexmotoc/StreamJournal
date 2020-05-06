@@ -64,7 +64,7 @@ public class SettingsActivity extends AppCompatActivity {
                             TextView header = createTextView(context, new int[] {}, new int[] {0, 50, 0, 0}, getString(R.string.basic), 24, -1);
                             settings.addView(header);
                         } else if (i == 2) {
-                            TextView header = createTextView(context, new int[] {}, new int[] {0, 30, 0, 0}, getString(R.string.basic), 24, -1);
+                            TextView header = createTextView(context, new int[] {}, new int[] {0, 30, 0, 0}, getString(R.string.advanced), 24, -1);
                             settings.addView(header);
                         }
 
